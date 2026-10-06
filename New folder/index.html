@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4efe4">
+  <title>Roda Rantau — Kota Kita</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,800&display=swap');
+    :root{--paper:#f4efe4;--card:#fffdf8;--ink:#202c25;--muted:#788078;--line:#ded9cc;--green:#28754e;--green-dark:#1d573b;--red:#c95742;--gold:#edbb57;--shadow:0 18px 60px #29332612}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font-family:"DM Sans",sans-serif}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    .shell{max-width:1200px;margin:auto;padding:24px clamp(14px,3vw,36px) 40px}
+    .masthead{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand-mark{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:var(--green);color:#fff;font-size:22px}
+    .brand-name{font-family:Fraunces,serif;font-size:22px;font-weight:800;line-height:1.05}
+    .brand-name small{display:block;margin-top:4px;color:var(--muted);font:500 10px "DM Mono",monospace;letter-spacing:.13em}
+    .server-status{display:flex;align-items:center;gap:8px;color:var(--muted);font:12px "DM Mono",monospace}
+    .status-dot{width:8px;height:8px;border-radius:50%;background:#b5b5aa}
+    .status-dot.online{background:#48a66e;box-shadow:0 0 0 4px #48a66e20}
+    .panel{border:1px solid var(--line);border-radius:22px;background:var(--card);box-shadow:var(--shadow)}
+    .gate{display:grid;grid-template-columns:1.05fr .95fr;overflow:hidden;min-height:490px}
+    .intro{padding:clamp(28px,5vw,64px);background:#e7eddd}
+    .eyebrow{color:var(--green);font:500 11px "DM Mono",monospace;letter-spacing:.16em;text-transform:uppercase}
+    h1{max-width:490px;margin:14px 0 12px;font:800 clamp(38px,6vw,68px)/.98 Fraunces,serif;letter-spacing:-.045em}
+    h1 em{color:var(--green);font-style:normal}
+    .intro-copy{max-width:460px;color:#5e695f;font-size:16px;line-height:1.65}
+    .feature-list{display:grid;gap:10px;margin:28px 0 0;padding:0;list-style:none;color:#46554a;font-size:13px}
+    .feature-list li{display:flex;align-items:center;gap:10px}
+    .feature-list span{color:var(--green);font-weight:800}
+    .entry{display:flex;flex-direction:column;justify-content:center;gap:18px;padding:clamp(24px,4vw,48px)}
+    .entry h2,.section-title{margin:0;font:700 24px Fraunces,serif}
+    .entry p{margin:-10px 0 0;color:var(--muted);font-size:13px;line-height:1.5}
+    .form-block{display:grid;gap:9px}
+    label{color:#586259;font-size:12px;font-weight:700}
+    input{width:100%;border:1px solid var(--line);border-radius:11px;background:#fff;padding:12px 13px;color:var(--ink);outline:none}
+    input:focus{border-color:#6a9b79;box-shadow:0 0 0 3px #28754e18}
+    .join-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .btn{border:0;border-radius:11px;padding:12px 16px;background:var(--green);color:#fff;font-weight:800;transition:transform .15s,background .15s}
+    .btn:hover:not(:disabled){transform:translateY(-1px);background:var(--green-dark)}
+    .btn:disabled{cursor:not-allowed;opacity:.45}
+    .btn.secondary{border:1px solid var(--line);background:#fff;color:var(--ink)}
+    .btn.secondary:hover:not(:disabled){background:#f4f2ea}
+    .btn.small{padding:9px 12px;font-size:12px}
+    .divider{height:1px;background:var(--line)}
+    .error{min-height:18px;color:var(--red);font-size:12px}
+    .game-area{display:grid;gap:16px}
+    .room-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 18px}
+    .room-meta{display:flex;align-items:center;gap:12px;min-width:0}
+    .room-code{color:var(--green);font:500 17px "DM Mono",monospace;letter-spacing:.13em}
+    .room-caption{color:var(--muted);font-size:12px}
+    .room-actions{display:flex;align-items:center;gap:8px}
+    .lobby{padding:clamp(20px,4vw,38px)}
+    .lobby-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px}
+    .lobby-head p{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .player-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .player-card{display:flex;align-items:center;gap:11px;min-height:68px;border:1px solid var(--line);border-radius:14px;padding:12px}
+    .player-avatar{display:grid;place-items:center;width:36px;height:36px;flex:none;border-radius:12px;color:#fff;font-weight:800}
+    .player-info{min-width:0;flex:1}
+    .player-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}
+    .player-sub{margin-top:3px;color:var(--muted);font:10px "DM Mono",monospace}
+    .you-tag{color:var(--green);font:10px "DM Mono",monospace}
+    .lobby-footer{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:20px;color:var(--muted);font-size:12px}
+    .play-layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:16px;align-items:start}
+    .board-wrap{padding:12px}
+    .board{display:grid;grid-template-columns:repeat(7,minmax(55px,1fr));grid-template-rows:repeat(7,minmax(73px,1fr));gap:5px;aspect-ratio:1/1}
+    .tile{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-width:0;overflow:hidden;border:1px solid #dfddcf;border-radius:10px;background:#fffefa;padding:7px 6px 6px}
+    .tile.kind-start{background:#e5f0df}
+    .tile.kind-event{background:#fff3d6}
+    .tile.kind-market{background:#f9e8dc}
+    .tile.kind-tax{background:#f7e5e1}
+    .tile.kind-community{background:#e6edf0}
+    .tile-color{position:absolute;top:0;left:0;width:100%;height:5px}
+    .tile-top{display:flex;justify-content:space-between;align-items:center;gap:2px;margin-top:2px;color:#8b9188;font:9px "DM Mono",monospace}
+    .tile-icon{font-size:15px}
+    .tile-name{position:relative;z-index:1;font-size:clamp(8px,.9vw,11px);font-weight:800;line-height:1.1;overflow-wrap:anywhere}
+    .tile-price{margin-top:3px;color:#647066;font:9px "DM Mono",monospace}
+    .tile-owners{display:flex;gap:3px;min-height:10px}
+    .owner-dot{width:8px;height:8px;border-radius:50%;box-shadow:0 0 0 1px #fff}
+    .tile-players{position:absolute;right:4px;bottom:4px;display:flex;gap:2px}
+    .token{width:12px;height:12px;border:1.5px solid white;border-radius:50%;box-shadow:0 1px 3px #0004}
+    .tile.current-tile{outline:2px solid var(--gold);outline-offset:1px;z-index:2}
+    .tile.active-tile{box-shadow:inset 0 0 0 2px var(--green)}
+    .board-center{grid-area:2/2/7/7;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;border-radius:14px;background:#eff0e7;padding:12px;text-align:center}
+    .center-brand{color:var(--green);font:800 clamp(17px,2.4vw,27px) Fraunces,serif}
+    .center-round{margin-top:5px;color:var(--muted);font:10px "DM Mono",monospace;letter-spacing:.08em}
+    .center-event{max-width:250px;margin-top:13px;color:#596259;font-size:12px;line-height:1.45}
+    .center-log{display:grid;gap:5px;width:100%;max-width:270px;margin-top:14px;text-align:left}
+    .center-log p{overflow:hidden;margin:0;color:#758074;font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+    .side{display:grid;gap:12px}
+    .turn-card,.score-card,.log-card{padding:17px}
+    .turn-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .turn-label{color:var(--muted);font:10px "DM Mono",monospace;letter-spacing:.08em}
+    .turn-player{display:flex;align-items:center;gap:9px;margin:14px 0}
+    .turn-player .player-avatar{width:34px;height:34px}
+    .turn-title{font-weight:800}
+    .turn-cash{color:var(--muted);font:10px "DM Mono",monospace}
+    .dice-box{display:grid;place-items:center;width:70px;height:70px;margin:12px auto;border:1px solid var(--line);border-radius:18px;background:#fff;font-size:42px}
+    .turn-actions{display:grid;gap:8px}
+    .turn-note{min-height:31px;margin:8px 0 0;color:var(--muted);font-size:11px;line-height:1.4;text-align:center}
+    .score-list{display:grid;gap:10px;margin-top:14px}
+    .score-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px}
+    .score-row-name{display:flex;align-items:center;gap:7px;overflow:hidden;font-size:12px;font-weight:700}
+    .score-row-name span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .score-cash{font:10px "DM Mono",monospace}
+    .score-assets{grid-column:1/-1;margin-left:15px;color:var(--muted);font-size:10px}
+    .log-list{display:grid;gap:8px;margin-top:13px}
+    .log-item{display:flex;gap:8px;color:#657066;font-size:10px;line-height:1.35}
+    .log-bullet{flex:none;color:var(--green)}
+    .winner{padding:28px;text-align:center;background:#e7eddd}
+    .play-layout>.winner{grid-column:1/-1}
+    .winner .eyebrow{margin-bottom:8px}
+    .winner h2{margin:0;font:800 32px Fraunces,serif}
+    .winner p{margin:8px 0 0;color:#596259;font-size:13px}
+    .notice{position:fixed;right:20px;bottom:18px;z-index:3;max-width:min(360px,calc(100vw - 40px));border-radius:12px;background:#26352c;padding:12px 16px;color:white;font-size:12px;box-shadow:var(--shadow)}
+    .hidden{display:none!important}
+    @media(max-width:850px){.play-layout{grid-template-columns:1fr}.side{grid-template-columns:repeat(2,minmax(0,1fr))}.log-card{grid-column:1/-1}.board{grid-template-rows:repeat(7,minmax(68px,1fr))}}
+    @media(max-width:620px){.shell{padding:14px 10px 28px}.masthead{margin-bottom:14px}.brand-name{font-size:19px}.gate{grid-template-columns:1fr}.intro{padding:25px}.intro h1{font-size:45px}.feature-list{margin-top:18px}.entry{gap:14px;padding:24px}.room-bar{align-items:flex-start;padding:12px}.room-caption{display:none}.room-actions{flex-direction:column;align-items:flex-end}.lobby-head{display:grid}.player-list{grid-template-columns:1fr}.lobby-footer{align-items:flex-start;flex-direction:column}.board-wrap{overflow-x:auto;padding:8px}.board{min-width:510px;grid-template-rows:repeat(7,70px);gap:4px}.tile{padding:6px 4px}.tile-name{font-size:9px}.side{grid-template-columns:1fr}.log-card{grid-column:auto}.server-status{font-size:10px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand"><div class="brand-mark">↗</div><div class="brand-name">RODA RANTAU<small>KOTA KITA · PERMAINAN EKONOMI</small></div></div>
+      <div class="server-status"><span id="statusDot" class="status-dot"></span><span id="connectionText">Menghubungkan ke server…</span></div>
+    </header>
+
+    <section id="gate" class="panel gate">
+      <div class="intro">
+        <div class="eyebrow">Permainan papan online · 2–4 pemain</div>
+        <h1>Bangun kota,<br>atur <em>langkahmu.</em></h1>
+        <p class="intro-copy">Kelilingi kota, pilih tempat usaha, cari peluang, dan jaga arus kas. Pemain dengan kekayaan bersih tertinggi setelah 12 putaran jadi juara.</p>
+        <ul class="feature-list">
+          <li><span>✦</span> Room pribadi dengan kode undangan</li>
+          <li><span>✦</span> Properti, biaya sewa, dan peningkatan usaha</li>
+          <li><span>✦</span> Kartu kejadian, pasar, pajak, dan bonus</li>
+          <li><span>✦</span> Giliran tersinkron untuk semua pemain</li>
+        </ul>
+      </div>
+      <div class="entry">
+        <h2>Mulai bermain</h2>
+        <p>Buat room baru atau masukkan kode dari temanmu.</p>
+        <div class="form-block">
+          <label for="createName">Namamu</label>
+          <input id="createName" maxlength="18" autocomplete="nickname" placeholder="Contoh: Dira">
+          <button id="createBtn" class="btn">Buat room baru</button>
+        </div>
+        <div class="divider"></div>
+        <div class="form-block">
+          <label for="joinName">Nama dan kode room</label>
+          <input id="joinName" maxlength="18" autocomplete="nickname" placeholder="Namamu">
+          <div class="join-row"><input id="roomInput" maxlength="5" autocomplete="off" placeholder="KODE"><button id="joinBtn" class="btn secondary">Gabung</button></div>
+        </div>
+        <div id="gateError" class="error" role="alert"></div>
+      </div>
+    </section>
+
+    <section id="roomArea" class="game-area hidden">
+      <div class="panel room-bar">
+        <div class="room-meta"><div><div class="room-caption">KODE UNDANGAN</div><div id="roomCode" class="room-code">-----</div></div><div id="roomState" class="room-caption"></div></div>
+        <div class="room-actions"><button id="copyBtn" class="btn secondary small">Salin kode</button><button id="leaveBtn" class="btn secondary small">Keluar</button></div>
+      </div>
+      <section id="lobby" class="panel lobby hidden">
+        <div class="lobby-head"><div><div class="eyebrow">Ruang tunggu</div><h2 class="section-title">Pemain berkumpul</h2><p>Bagikan kode room. Permainan dimulai saat ada minimal dua pemain.</p></div><div id="lobbyCount" class="room-code"></div></div>
+        <div id="lobbyPlayers" class="player-list"></div>
+        <div class="lobby-footer"><span id="lobbyHint">Menunggu pemain lain untuk bergabung…</span><button id="startBtn" class="btn" disabled>Mulai permainan</button></div>
+      </section>
+      <section id="play" class="play-layout hidden">
+        <div id="winner" class="panel winner hidden"></div>
+        <div class="panel board-wrap"><div id="board" class="board"></div></div>
+        <aside class="side">
+          <section class="panel turn-card">
+            <div class="turn-head"><div class="turn-label">GILIRAN BERJALAN</div><div id="roundLabel" class="turn-label"></div></div>
+            <div id="turnPlayer" class="turn-player"></div>
+            <div id="dice" class="dice-box">–</div>
+            <div id="turnActions" class="turn-actions"></div>
+            <p id="turnNote" class="turn-note"></p>
+          </section>
+          <section class="panel score-card"><div class="turn-label">PEMAIN & KEKAYAAN</div><div id="scoreList" class="score-list"></div></section>
+          <section class="panel log-card"><div class="turn-label">KABAR KOTA</div><div id="logList" class="log-list"></div></section>
+        </aside>
+      </section>
+      <section id="lobbyWinner" class="panel winner hidden"></section>
+    </section>
+  </main>
+  <div id="notice" class="notice hidden" role="status"></div>
+  <script>
+    (() => {
+      const $ = (selector) => document.querySelector(selector);
+      const palette = ['#28754e', '#c95742', '#3975a8', '#9a6bba'];
+      const faces = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+      const spaces = [
+        {name:'Alun-alun',icon:'🏁',type:'start'},
+        {name:'Warung Kopi',icon:'☕',type:'property',price:30,rent:7,color:'#d69b45'},
+        {name:'Kabar Kota',icon:'📰',type:'event'},
+        {name:'Kios Bunga',icon:'🌷',type:'property',price:35,rent:8,color:'#df7690'},
+        {name:'Pasar Pagi',icon:'🥬',type:'market'},
+        {name:'Retribusi',icon:'🧾',type:'tax'},
+        {name:'Bengkel Roda',icon:'🛠️',type:'property',price:40,rent:9,color:'#718896'},
+        {name:'Balai Warga',icon:'🏡',type:'community'},
+        {name:'Kedai Roti',icon:'🥐',type:'property',price:45,rent:10,color:'#d48654'},
+        {name:'Kabar Kota',icon:'📰',type:'event'},
+        {name:'Pasar Pagi',icon:'🥬',type:'market'},
+        {name:'Studio Kain',icon:'🧵',type:'property',price:50,rent:12,color:'#7a9d6b'},
+        {name:'Retribusi',icon:'🧾',type:'tax'},
+        {name:'Toko Buku',icon:'📚',type:'property',price:55,rent:13,color:'#658ac0'},
+        {name:'Kabar Kota',icon:'📰',type:'event'},
+        {name:'Balai Warga',icon:'🏡',type:'community'},
+        {name:'Kebun Kota',icon:'🌱',type:'property',price:60,rent:14,color:'#75a66b'},
+        {name:'Pasar Pagi',icon:'🥬',type:'market'},
+        {name:'Rumah Musik',icon:'🎸',type:'property',price:65,rent:15,color:'#9b79b8'},
+        {name:'Retribusi',icon:'🧾',type:'tax'},
+        {name:'Paviliun Seni',icon:'🎨',type:'property',price:70,rent:17,color:'#d16f63'},
+        {name:'Kabar Kota',icon:'📰',type:'event'},
+        {name:'Pusat Kriya',icon:'🧺',type:'property',price:75,rent:18,color:'#bd9556'},
+        {name:'Balai Warga',icon:'🏡',type:'community'}
+      ];
+      let socket;
+      let game = null;
+      let myId = null;
+      let busy = false;
+      let noticeTimer;
+
+      function showError(message) { $('#gateError').textContent = message; }
+      function readSavedRoom() {
+        try {
+          const saved = sessionStorage.getItem('roda-rantau-room');
+          return saved ? JSON.parse(saved) : null;
+        } catch {
+          showNotice('Sesi room tidak dapat dibaca. Silakan bergabung kembali.');
+          return null;
+        }
+      }
+      function saveRoomSession(room) {
+        try {
+          sessionStorage.setItem('roda-rantau-room', JSON.stringify(room));
+        } catch {
+          showNotice('Sesi browser tidak dapat disimpan. Jika halaman dimuat ulang, kamu perlu bergabung kembali.');
+        }
+      }
+      function clearRoomSession() {
+        try {
+          sessionStorage.removeItem('roda-rantau-room');
+        } catch {
+          showNotice('Sesi browser tidak dapat dihapus. Tutup tab ini jika tidak ingin tersambung kembali.');
+        }
+      }
+      function showNotice(message) {
+        const el = $('#notice');
+        el.textContent = message;
+        el.classList.remove('hidden');
+        clearTimeout(noticeTimer);
+        noticeTimer = setTimeout(() => el.classList.add('hidden'), 3200);
+      }
+      function setConnection(online, text) {
+        $('#statusDot').classList.toggle('online', online);
+        $('#connectionText').textContent = text;
+        $('#createBtn').disabled = !online || busy;
+        $('#joinBtn').disabled = !online || busy;
+      }
+      function send(message) {
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+          showError('Koneksi terputus. Muat ulang halaman setelah server tersedia.');
+          return false;
+        }
+        socket.send(JSON.stringify(message));
+        return true;
+      }
+      function connect() {
+        if (!['http:', 'https:'].includes(location.protocol) || !location.host) {
+          setConnection(false, 'Server belum dijalankan');
+          showError('Jalankan server dengan npm install lalu npm start, kemudian buka http://localhost:3000.');
+          return;
+        }
+        const scheme = location.protocol === 'https:' ? 'wss:' : 'ws:';
+        try {
+          socket = new WebSocket(`${scheme}//${location.host}`);
+        } catch {
+          setConnection(false, 'Koneksi server gagal');
+          showError('Tidak dapat membuka koneksi ke server. Pastikan server berjalan dan alamatnya benar.');
+          return;
+        }
+        socket.addEventListener('open', () => {
+          setConnection(true, 'Terhubung ke server');
+          const saved = readSavedRoom();
+          if (saved && saved.code && saved.token) {
+            send({type:'join', code:saved.code, token:saved.token, name:saved.name || 'Pemain'});
+          }
+        });
+        socket.addEventListener('message', (event) => {
+          let message;
+          try { message = JSON.parse(event.data); }
+          catch { showNotice('Server mengirim data yang tidak dapat dibaca.'); return; }
+          if (message.type === 'error') {
+            busy = false;
+            $('#createBtn').disabled = false;
+            $('#joinBtn').disabled = false;
+            if (!game) showError(message.message);
+            else showNotice(message.message);
+            return;
+          }
+          if (message.type === 'welcome') {
+            myId = message.playerId;
+            saveRoomSession({code:message.code, token:message.token, name:message.name});
+            showError('');
+            if (message.reconnected) showNotice('Berhasil menyambung kembali ke room.');
+            return;
+          }
+          if (message.type === 'state') {
+            busy = false;
+            game = message.state;
+            render();
+          }
+        });
+        socket.addEventListener('close', () => setConnection(false, 'Koneksi terputus'));
+        socket.addEventListener('error', () => setConnection(false, 'Server tidak tersedia'));
+      }
+      function playerById(id) { return game.players.find(player => player.id === id); }
+      function netWorth(player) {
+        return player.cash + player.properties.reduce((sum, property) => sum + property.price + property.level * property.price * .35, 0);
+      }
+      function money(amount) { return `${amount < 0 ? '−' : ''}Rp ${Math.abs(amount).toLocaleString('id-ID')} jt`; }
+      function avatar(player, sizeClass = '') {
+        const index = game.players.findIndex(item => item.id === player.id);
+        const el = document.createElement('span');
+        el.className = `player-avatar ${sizeClass}`.trim();
+        el.style.background = palette[index % palette.length];
+        el.textContent = player.name.trim().slice(0,1).toUpperCase();
+        return el;
+      }
+      function addPlayerCard(container, player, lobbyMode = false) {
+        const card = document.createElement('div');
+        card.className = 'player-card';
+        card.append(avatar(player));
+        const info = document.createElement('div');
+        info.className = 'player-info';
+        const name = document.createElement('div');
+        name.className = 'player-name';
+        name.textContent = player.name;
+        const sub = document.createElement('div');
+        sub.className = 'player-sub';
+        sub.textContent = lobbyMode ? (player.online ? 'TERHUBUNG' : 'TERPUTUS') : `${money(player.cash)} · harta ${money(netWorth(player))}`;
+        info.append(name, sub);
+        card.append(info);
+        if (player.id === myId) {
+          const you = document.createElement('span');
+          you.className = 'you-tag';
+          you.textContent = 'KAMU';
+          card.append(you);
+        }
+        if (!player.online) {
+          const offline = document.createElement('span');
+          offline.className = 'player-sub';
+          offline.textContent = 'OFFLINE';
+          card.append(offline);
+        }
+        container.append(card);
+      }
+      function render() {
+        if (!game) return;
+        $('#gate').classList.add('hidden');
+        $('#roomArea').classList.remove('hidden');
+        $('#roomCode').textContent = game.code;
+        $('#roomState').textContent = game.status === 'lobby' ? 'MENUNGGU PEMAIN' : game.status === 'finished' ? 'PERMAINAN SELESAI' : 'PERMAINAN BERLANGSUNG';
+        $('#lobby').classList.toggle('hidden', game.status !== 'lobby');
+        $('#play').classList.toggle('hidden', game.status === 'lobby');
+        $('#lobbyWinner').classList.toggle('hidden', game.status !== 'finished');
+        if (game.status === 'lobby') renderLobby();
+        else renderPlay();
+      }
+      function renderLobby() {
+        const players = $('#lobbyPlayers');
+        players.replaceChildren();
+        game.players.forEach(player => addPlayerCard(players, player, true));
+        for (let i = game.players.length; i < 4; i++) {
+          const empty = document.createElement('div');
+          empty.className = 'player-card';
+          empty.style.color = '#a0a49b';
+          empty.textContent = 'Menunggu pemain…';
+          players.append(empty);
+        }
+        $('#lobbyCount').textContent = `${game.players.length}/4`;
+        const isHost = game.hostId === myId;
+        const onlineCount = game.players.filter(player => player.online).length;
+        $('#startBtn').classList.toggle('hidden', !isHost);
+        $('#startBtn').disabled = onlineCount < 2;
+        $('#lobbyHint').textContent = onlineCount < 2 ? 'Bagikan kode room dan tunggu minimal satu pemain lain terhubung.' : isHost ? 'Semua siap? Pemain offline bisa disambungkan kembali atau gilirannya dibantu.' : 'Menunggu pemilik room memulai permainan…';
+      }
+      function renderPlay() {
+        renderBoard();
+        renderTurn();
+        renderScores();
+        renderLogs();
+        if (game.status === 'finished') renderWinner();
+        else $('#winner').classList.add('hidden');
+      }
+      function renderWinner() {
+        const winner = playerById(game.winnerId);
+        const el = $('#winner');
+        el.classList.remove('hidden');
+        el.replaceChildren();
+        const eyebrow = document.createElement('div');
+        eyebrow.className = 'eyebrow';
+        eyebrow.textContent = 'Pemenang Roda Rantau';
+        const title = document.createElement('h2');
+        title.textContent = winner ? `${winner.name} juara!` : 'Permainan selesai';
+        const score = document.createElement('p');
+        score.textContent = winner ? `Kekayaan bersih akhir ${money(netWorth(winner))}. Terima kasih sudah ikut membangun kota.` : 'Terima kasih sudah bermain.';
+        el.append(eyebrow,title,score);
+      }
+      function renderBoard() {
+        const board = $('#board');
+        board.replaceChildren();
+        const center = document.createElement('div');
+        center.className = 'board-center';
+        const brand = document.createElement('div');
+        brand.className = 'center-brand';
+        brand.textContent = 'KOTA KITA';
+        const round = document.createElement('div');
+        round.className = 'center-round';
+        round.textContent = `PUTARAN ${Math.min(game.round,12)} DARI 12`;
+        const event = document.createElement('div');
+        event.className = 'center-event';
+        event.textContent = game.lastEvent || 'Kelilingi kota, bangun usaha, dan buat setiap langkah berarti.';
+        const log = document.createElement('div');
+        log.className = 'center-log';
+        game.log.slice(0,3).forEach(text => { const p = document.createElement('p'); p.textContent = `• ${text}`; log.append(p); });
+        center.append(brand,round,event,log);
+        board.append(center);
+        spaces.forEach((space,index) => {
+          const tile = document.createElement('div');
+          const current = game.players[game.currentPlayer]?.position === index;
+          const landed = game.landed === index && game.phase !== 'roll';
+          tile.className = `tile kind-${space.type}${current ? ' current-tile' : ''}${landed ? ' active-tile' : ''}`;
+          const positions = index < 7 ? [1,index+1] : index < 12 ? [index-5,7] : index < 19 ? [7,19-index] : [25-index,1];
+          tile.style.gridRow = positions[0];
+          tile.style.gridColumn = positions[1];
+          if (space.color) {
+            const color = document.createElement('div');
+            color.className = 'tile-color';
+            color.style.background = space.color;
+            tile.append(color);
+          }
+          const top = document.createElement('div');
+          top.className = 'tile-top';
+          top.innerHTML = `<span>${String(index+1).padStart(2,'0')}</span><span class="tile-icon">${space.icon}</span>`;
+          const label = document.createElement('div');
+          label.className = 'tile-name';
+          label.textContent = space.name;
+          const price = document.createElement('div');
+          price.className = 'tile-price';
+          if (space.price) {
+            const held = game.players.flatMap(player => player.properties.map(property => ({...property,player}))).find(property => property.index === index);
+            price.textContent = held ? `Sewa ${money(space.rent + held.level*4)}` : money(space.price);
+            if (held) {
+              const dot = document.createElement('span');
+              dot.className = 'owner-dot';
+              dot.style.background = palette[game.players.indexOf(held.player) % palette.length];
+              tile.append(dot);
+            }
+          } else {
+            price.textContent = ({start:'+20 saat lewat',event:'kartu kejadian',market:'peluang pasar',tax:'bayar iuran',community:'bonus warga'})[space.type];
+          }
+          const tokens = document.createElement('div');
+          tokens.className = 'tile-players';
+          game.players.filter(player => player.position === index).forEach(player => {
+            const token = document.createElement('span');
+            token.className = 'token';
+            token.title = player.name;
+            token.style.background = palette[game.players.indexOf(player) % palette.length];
+            tokens.append(token);
+          });
+          tile.append(top,label,price,tokens);
+          board.append(tile);
+        });
+      }
+      function appendButton(container, label, action, primary = false) {
+        const button = document.createElement('button');
+        button.className = `btn${primary ? '' : ' secondary'}`;
+        button.textContent = label;
+        button.disabled = busy;
+        button.addEventListener('click', () => {
+          if (send({type:'action',action})) {
+            busy = true;
+            renderTurn();
+          }
+        });
+        container.append(button);
+      }
+      function renderTurn() {
+        const active = game.players[game.currentPlayer];
+        $('#roundLabel').textContent = `RONDE ${Math.min(game.round,12)}/12`;
+        const holder = $('#turnPlayer');
+        holder.replaceChildren();
+        if (active) {
+          holder.append(avatar(active));
+          const info = document.createElement('div');
+          const name = document.createElement('div');
+          name.className = 'turn-title';
+          name.textContent = active.name;
+          const cash = document.createElement('div');
+          cash.className = 'turn-cash';
+          cash.textContent = money(active.cash);
+          info.append(name,cash);
+          holder.append(info);
+        }
+        $('#dice').textContent = game.dice ? faces[game.dice-1] : '–';
+        const actions = $('#turnActions');
+        actions.replaceChildren();
+        const myTurn = active && (active.id === myId || !active.online);
+        const canPlay = myTurn && game.status === 'playing';
+        const tile = game.landed === null ? null : spaces[game.landed];
+        const ownTile = tile && tile.type === 'property' && game.owners[game.landed] === active?.id;
+        if (game.phase === 'roll') {
+          if (canPlay) appendButton(actions, active.id === myId ? 'Lempar dadu' : `Lanjutkan giliran ${active.name}`, 'roll', true);
+          $('#turnNote').textContent = canPlay && active.id !== myId ? 'Pemain ini terputus; kamu bisa membantu melanjutkan gilirannya.' : canPlay ? 'Lempar dadu untuk mulai berjalan.' : `${active ? active.name : 'Pemain'} sedang mendapat giliran.`;
+        } else if (game.phase === 'buy') {
+          const price = spaces[game.landed].price;
+          if (canPlay) {
+            appendButton(actions, `Beli · ${money(price)}`, 'buy', true);
+            appendButton(actions, 'Lewati pembelian', 'decline');
+          }
+          $('#turnNote').textContent = canPlay ? `Tempat ini belum dimiliki. Kasmu ${money(active.cash)}.` : `${active.name} sedang memilih properti.`;
+        } else {
+          if (canPlay && ownTile && active.cash >= tile.price && (active.properties.find(property => property.index === game.landed)?.level || 0) < 2) {
+            appendButton(actions, `Tingkatkan · ${money(tile.price)}`, 'upgrade');
+          }
+          if (canPlay) appendButton(actions, 'Akhiri giliran', 'end', !ownTile);
+          $('#turnNote').textContent = canPlay ? ownTile ? 'Usahamu bisa ditingkatkan agar sewanya bertambah.' : 'Giliranmu selesai. Lanjutkan ke pemain berikutnya.' : `${active.name} sedang menjalankan gilirannya.`;
+        }
+        if (game.status === 'finished') {
+          actions.replaceChildren();
+          $('#turnNote').textContent = 'Permainan selesai. Kekayaan bersih menentukan pemenang.';
+        }
+        if (busy) $('#turnNote').textContent = 'Menunggu server memperbarui permainan…';
+      }
+      function renderScores() {
+        const scores = $('#scoreList');
+        scores.replaceChildren();
+        game.players.slice().sort((a,b) => netWorth(b)-netWorth(a)).forEach(player => {
+          const row = document.createElement('div');
+          row.className = 'score-row';
+          const name = document.createElement('div');
+          name.className = 'score-row-name';
+          const dot = document.createElement('span');
+          dot.className = 'owner-dot';
+          dot.style.background = palette[game.players.indexOf(player) % palette.length];
+          const text = document.createElement('span');
+          text.textContent = player.name + (player.id === game.players[game.currentPlayer]?.id ? ' · giliran' : '');
+          name.append(dot,text);
+          const amount = document.createElement('div');
+          amount.className = 'score-cash';
+          amount.textContent = money(netWorth(player));
+          const assets = document.createElement('div');
+          assets.className = 'score-assets';
+          assets.textContent = `${player.properties.length} tempat usaha${player.properties.length ? ` · kas ${money(player.cash)}` : ''}`;
+          row.append(name,amount,assets);
+          scores.append(row);
+        });
+      }
+      function renderLogs() {
+        const logs = $('#logList');
+        logs.replaceChildren();
+        game.log.slice(0,6).forEach(text => {
+          const row = document.createElement('div');
+          row.className = 'log-item';
+          const bullet = document.createElement('span');
+          bullet.className = 'log-bullet';
+          bullet.textContent = '•';
+          const label = document.createElement('span');
+          label.textContent = text;
+          row.append(bullet,label);
+          logs.append(row);
+        });
+      }
+      $('#createBtn').addEventListener('click', () => {
+        showError('');
+        const name = $('#createName').value.trim();
+        if (!name) return showError('Isi namamu terlebih dahulu.');
+        busy = true;
+        setConnection(true, 'Membuat room…');
+        if (!send({type:'create',name})) busy = false;
+      });
+      $('#joinBtn').addEventListener('click', () => {
+        showError('');
+        const name = $('#joinName').value.trim();
+        const code = $('#roomInput').value.trim().toUpperCase();
+        if (!name) return showError('Isi namamu terlebih dahulu.');
+        if (!/^[A-Z0-9]{5}$/.test(code)) return showError('Kode room harus terdiri dari 5 huruf atau angka.');
+        busy = true;
+        setConnection(true, 'Bergabung ke room…');
+        if (!send({type:'join',name,code})) busy = false;
+      });
+      $('#roomInput').addEventListener('input', event => { event.target.value = event.target.value.toUpperCase(); });
+      $('#startBtn').addEventListener('click', () => send({type:'start'}));
+      $('#copyBtn').addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(game.code);
+          showNotice('Kode room berhasil disalin.');
+        } catch {
+          showNotice(`Bagikan kode ini: ${game.code}`);
+        }
+      });
+      $('#leaveBtn').addEventListener('click', () => {
+        clearRoomSession();
+        game = null;
+        myId = null;
+        busy = false;
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          send({type:'leave'});
+          socket.close();
+        }
+        $('#roomArea').classList.add('hidden');
+        $('#gate').classList.remove('hidden');
+        setConnection(false, 'Menyambungkan kembali…');
+        connect();
+      });
+      connect();
+    })();
+  </script>
+</body>
+</html>
